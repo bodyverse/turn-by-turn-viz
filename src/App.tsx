@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react';
+import { fetchSheet } from './utils/fetchSheet';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [cards, setCards] = useState<Record<string, any>[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const cardData = await fetchSheet<Record<string, any>>('Moves');
+      setCards(cardData);
+    })();
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div style={{ padding: '2rem' }}>
+      <h1>Dance Card DB Viewer</h1>
+
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+        {cards.map((card, i) => (
+          <div
+            key={i}
+            style={{
+              border: '1px solid #ccc',
+              borderRadius: '8px',
+              padding: '12px',
+              width: '100%',
+              background: '#000',
+            }}
+          >
+            {Object.entries(card).map(([key, value]) => (
+              <div key={key}>
+                <strong>{key}:</strong> {value}
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
